@@ -47,6 +47,12 @@ export default {
       ],
     }
   },
+  // Home.vue에서 inject로 quizzes를 받을 수 있도록 provide 추가
+  provide() {
+    return {
+      quizzes: this.quizzes,
+    }
+  },
   methods: {
     handleCreateQuiz(newQuiz) {
       // 새 퀴즈 생성
