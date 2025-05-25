@@ -1,5 +1,5 @@
 <template>
-  <div class="quiz-detail">
+  <div class="answer-view">
     <!-- 헤더 영역 -->
     <header class="quiz-header">
       <h1>Quiz 퀴즈</h1>
@@ -12,14 +12,16 @@
       <span class="nav-separator">|</span>
       <router-link to="/quiz" class="nav-item">퀴즈 목록</router-link>
       <span class="nav-separator">|</span>
-      <span class="nav-item active">퀴즈 상세</span>
+      <router-link :to="`/quiz/${id}`" class="nav-item">퀴즈 상세</router-link>
+      <span class="nav-separator">|</span>
+      <span class="nav-item active">정답 확인</span>
     </nav>
 
     <!-- 메인 콘텐츠 -->
     <main class="main-content">
       <div class="container" v-if="currentQuiz">
         <div class="quiz-header-section">
-          <h2>{{ currentQuiz.pk }}번 문제</h2>
+          <h2>{{ currentQuiz.pk }}번 문제 결과</h2>
           <router-link to="/quiz" class="back-btn">목록으로</router-link>
         </div>
 
@@ -29,19 +31,34 @@
             <p class="question-text">{{ currentQuiz.question }}</p>
           </div>
 
-          <div class="answer-section">
-            <h3>답안 제출</h3>
-            <div class="form-group">
-              <input
-                type="text"
-                v-model="userAnswer"
-                placeholder="답을 입력하세요"
-                class="answer-input"
-                @keyup.enter="submitAnswer"
-              />
-              <button class="submit-btn" @click="submitAnswer" :disabled="!userAnswer.trim()">
-                제출하기
-              </button>
+          <div class="result-section">
+            <h3>결과</h3>
+            <!-- 직접 UI 구현 (AnswerItem을 사용하지 않고) -->
+            <div class="answer-card" :class="{ correct: isCorrect, incorrect: !isCorrect }">
+              <div class="answer-header">
+                <span class="question-label">{{ currentQuiz.pk }}번 문제</span>
+                <h4>정답 확인</h4>
+              </div>
+              <div class="answer-body">
+                <div
+                  class="result-message"
+                  :class="{ 'correct-msg': isCorrect, 'incorrect-msg': !isCorrect }"
+                >
+                  {{ isCorrect ? '정답입니다!' : '오답입니다.' }}
+                </div>
+                <div class="answer-info">
+                  <div>
+                    나의 제출 답안: <span class="user-answer">{{ userAnswer }}</span>
+                  </div>
+                  <div>
+                    정답: <span class="correct-answer-text">{{ correctAnswer }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <router-link :to="`/quiz/${id}`" class="try-again-btn">다시 시도</router-link>
+              <router-link to="/quiz" class="back-to-list-btn">목록으로</router-link>
             </div>
           </div>
         </div>
@@ -56,20 +73,20 @@
 
 <script>
 export default {
-  name: 'QuizDetail',
+  name: 'AnswerView',
   props: {
     id: {
       type: String,
       required: true,
     },
+    answer: {
+      type: String,
+      required: true,
+    },
   },
   inject: ['quizzes', 'getQuizById'],
-  data() {
-    return {
-      userAnswer: '',
-    }
-  },
   computed: {
+    // 현재 퀴즈 정보
     currentQuiz() {
       if (this.getQuizById) {
         return this.getQuizById(this.id)
@@ -78,43 +95,31 @@ export default {
       const quizId = parseInt(this.id, 10)
       return this.quizzes.find((quiz) => quiz.pk === quizId) || null
     },
-  },
-  methods: {
-    submitAnswer() {
-      if (!this.userAnswer.trim() || !this.currentQuiz) return
-
-      // 사용자 확인 메시지 표시
-      const confirmMessage = `${this.userAnswer} 을/를 답안으로 제출합니다. 확실합니까?`
-      const isConfirmed = window.confirm(confirmMessage)
-
-      if (isConfirmed) {
-        // 확인을 누르면 답안 페이지로 이동
-        this.$router.push({
-          name: 'AnswerView',
-          params: {
-            id: this.id,
-            answer: this.currentQuiz.answer,
-          },
-          query: {
-            userAnswer: this.userAnswer,
-          },
-        })
-      } else {
-        // 취소를 누르면 입력 초기화
-        this.userAnswer = ''
-      }
+    // URL 쿼리에서 사용자 답안 가져오기
+    userAnswer() {
+      return this.$route.query.userAnswer || ''
+    },
+    // props로 받은 답안 (실제 정답)
+    correctAnswer() {
+      return this.answer
+    },
+    // 정답 여부 계산
+    isCorrect() {
+      return this.userAnswer.toLowerCase().trim() === this.correctAnswer.toLowerCase().trim()
     },
   },
   mounted() {
-    console.log('QuizDetail 컴포넌트가 마운트되었습니다')
+    console.log('AnswerView 컴포넌트가 마운트되었습니다')
     console.log('퀴즈 ID:', this.id)
-    console.log('현재 퀴즈:', this.currentQuiz)
+    console.log('정답:', this.answer)
+    console.log('사용자 답안:', this.userAnswer)
+    console.log('정답 여부:', this.isCorrect)
   },
 }
 </script>
 
 <style scoped>
-.quiz-detail {
+.answer-view {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
   min-height: 100vh;
@@ -240,53 +245,125 @@ export default {
   border-left: 4px solid #ff8c42;
 }
 
-.answer-section {
-  margin-bottom: 2rem;
-}
-
-.answer-section h3 {
+.result-section h3 {
   color: #333;
   margin-bottom: 1rem;
   font-size: 1.2rem;
 }
 
-.form-group {
+/* 정답 카드 스타일 */
+.answer-card {
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.answer-card.correct {
+  border-color: #28a745;
+}
+
+.answer-card.incorrect {
+  border-color: #dc3545;
+}
+
+.answer-header {
+  background: #f8f9fa;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.question-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.2rem;
+}
+
+.answer-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.answer-body {
+  padding: 1rem;
+}
+
+.result-message {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.correct-msg {
+  color: #28a745;
+}
+
+.incorrect-msg {
+  color: #dc3545;
+}
+
+.answer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.user-answer {
+  font-weight: 500;
+}
+
+.correct-answer-text {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.action-buttons {
   display: flex;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.answer-input {
+.try-again-btn {
   flex: 1;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.answer-input:focus {
-  outline: none;
-  border-color: #ff8c42;
-}
-
-.submit-btn {
-  background: #28a745;
+  background: #007bff;
   color: white;
   border: none;
-  padding: 0 1.5rem;
+  padding: 0.8rem 0;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s;
+  text-align: center;
+  text-decoration: none;
 }
 
-.submit-btn:hover:not(:disabled) {
-  background: #218838;
+.try-again-btn:hover {
+  background: #0069d9;
 }
 
-.submit-btn:disabled {
+.back-to-list-btn {
+  flex: 1;
   background: #6c757d;
-  cursor: not-allowed;
+  color: white;
+  border: none;
+  padding: 0.8rem 0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-list-btn:hover {
+  background: #545b62;
 }
 
 .not-found {
@@ -319,7 +396,7 @@ export default {
     padding: 1.5rem;
   }
 
-  .form-group {
+  .action-buttons {
     flex-direction: column;
   }
 }

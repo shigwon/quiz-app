@@ -56,6 +56,14 @@ export default {
   margin-bottom: 1rem;
 }
 
+.answer-card.correct {
+  border-color: #28a745;
+}
+
+.answer-card.incorrect {
+  border-color: #dc3545;
+}
+
 .answer-header {
   background: #f8f9fa;
   padding: 0.5rem;
@@ -108,13 +116,5 @@ export default {
 .correct-answer-text {
   color: #28a745;
   font-weight: 600;
-}
-
-.correct {
-  border-color: #28a745;
-}
-
-.incorrect {
-  border-color: #dc3545;
 }
 </style>
