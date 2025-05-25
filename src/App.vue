@@ -1,83 +1,86 @@
+<!-- src/App.vue -->
 <template>
   <div id="app">
-    <!-- 네비게이션 메뉴 -->
-    <nav class="navbar">
-      <div class="nav-brand">
-        <router-link to="/" class="brand-link">My App</router-link>
-      </div>
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <router-link to="/" class="nav-link">홈</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/about" class="nav-link">소개</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/contact" class="nav-link">연락처</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/dashboard" class="nav-link">대시보드</router-link>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- 라우터 뷰 - 현재 경로에 해당하는 컴포넌트가 렌더링됩니다 -->
-    <main class="main-content">
-      <router-view />
-    </main>
+    <router-view
+      :quizzes="quizzes"
+      @create-quiz="handleCreateQuiz"
+      @update-quiz="handleUpdateQuiz"
+    />
   </div>
 </template>
 
 <script>
 export default {
   name: 'App',
+  data() {
+    return {
+      quizzes: [
+        {
+          pk: 1,
+          question:
+            'Python 가상 환경을 만들어 프로젝트 별로 라이브러리 의존성을 격리시키는 명령어는?',
+          answer: 'flask',
+        },
+        {
+          pk: 2,
+          question: 'HTML에서 텍스트 입력란을 만드는 데 사용되는 요소는?',
+          answer: 'input',
+        },
+        {
+          pk: 3,
+          question:
+            '웹 애플리케이션에서 클라이언트의 데이터를 서버로 전송할 때 주로 사용되는 HTTP메서드는?',
+          answer: 'post',
+        },
+        {
+          pk: 4,
+          question:
+            'Python의 가상 환경을 만들어 프로젝트 별로 라이브러리 의존성을 격리시키는 명령어는?',
+          answer: 'virtualenv',
+        },
+        {
+          pk: 5,
+          question:
+            '웹 애플리케이션을 개발할 때, 사용자의 브라우저에 보여지는 부분을 렌더링하는 언어는 무엇인가요?',
+          answer: 'html',
+        },
+      ],
+    }
+  },
+  methods: {
+    handleCreateQuiz(newQuiz) {
+      // 새 퀴즈 생성
+      // 새 pk 값은 기존 가장 큰 pk 값 + 1
+      const maxPk = Math.max(...this.quizzes.map((quiz) => quiz.pk), 0)
+      const quizWithPk = {
+        ...newQuiz,
+        pk: maxPk + 1,
+      }
+
+      // 새 퀴즈를 배열에 추가
+      this.quizzes.push(quizWithPk)
+    },
+    handleUpdateQuiz(updatedQuiz) {
+      // 기존 퀴즈 업데이트
+      const index = this.quizzes.findIndex((quiz) => quiz.pk === updatedQuiz.pk)
+      if (index !== -1) {
+        this.quizzes[index] = updatedQuiz
+      }
+    },
+  },
 }
 </script>
 
-<style scoped>
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #2c3e50;
-  color: white;
-}
-
-.nav-brand .brand-link {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-  text-decoration: none;
-}
-
-.nav-menu {
-  display: flex;
-  list-style: none;
+<style>
+body {
   margin: 0;
   padding: 0;
-  gap: 1rem;
+  font-family: Arial, sans-serif;
 }
 
-.nav-link {
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* 활성 링크 스타일 */
-.nav-link.router-link-active {
-  background-color: #3498db;
-}
-
-.main-content {
-  padding: 2rem;
-  min-height: calc(100vh - 80px);
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

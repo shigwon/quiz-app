@@ -57,18 +57,6 @@
               <button type="button" class="cancel-btn" @click="goBack">취소</button>
             </div>
           </form>
-
-          <!-- 기존 퀴즈 목록 (참고용) -->
-          <div class="existing-quizzes">
-            <h3>기존 퀴즈 목록</h3>
-            <div class="quiz-preview-list">
-              <div v-for="quiz in quizList" :key="quiz.pk" class="quiz-preview-item">
-                <div class="quiz-preview-number">{{ quiz.pk }}번</div>
-                <div class="quiz-preview-question">{{ quiz.question }}</div>
-                <div class="quiz-preview-answer">정답: {{ quiz.answer }}</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </main>
@@ -78,22 +66,11 @@
 <script>
 export default {
   name: 'QuizCreate',
-  props: {
-    quizzes: {
-      type: Array,
-      default: () => [],
-    },
-  },
   data() {
     return {
       question: '',
       answer: '',
     }
-  },
-  computed: {
-    quizList() {
-      return this.quizzes
-    },
   },
   methods: {
     submitEvent() {
@@ -186,7 +163,7 @@ export default {
 
 /* 메인 콘텐츠 */
 .main-content {
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -198,10 +175,7 @@ export default {
 }
 
 .quiz-form-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
+  margin-bottom: 2rem;
 }
 
 /* 퀴즈 폼 스타일 */
@@ -292,76 +266,13 @@ export default {
   background: #545b62;
 }
 
-/* 기존 퀴즈 목록 스타일 */
-.existing-quizzes {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.existing-quizzes h3 {
-  color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
-  border-bottom: 2px solid #ff8c42;
-  padding-bottom: 0.5rem;
-}
-
-.quiz-preview-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.quiz-preview-item {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 1rem;
-  transition: transform 0.2s;
-}
-
-.quiz-preview-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.quiz-preview-number {
-  font-weight: bold;
-  color: #ff8c42;
-  margin-bottom: 0.3rem;
-  font-size: 0.9rem;
-}
-
-.quiz-preview-question {
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.quiz-preview-answer {
-  color: #666;
-  font-size: 0.8rem;
-  font-style: italic;
-}
-
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .main-content {
     padding: 0 1rem;
   }
 
-  .quiz-form-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .quiz-form,
-  .existing-quizzes {
+  .quiz-form {
     padding: 1.5rem;
   }
 

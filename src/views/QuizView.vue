@@ -23,7 +23,6 @@
           <h2>퀴즈 목록</h2>
           <button class="create-quiz-btn" @click="goToCreateQuiz">새 퀴즈 생성</button>
         </div>
-        <p>퀴즈 데이터로 가지고 있어야 한다.</p>
 
         <div class="quiz-list">
           <!-- v-for를 사용하여 각 퀴즈 데이터의 정보를 렌더링 (computed로 정렬된 목록) -->
@@ -71,10 +70,6 @@ export default {
     updateQuiz(newQuiz) {
       // 부모 컴포넌트로 이벤트 전달
       this.$emit('update-quiz', newQuiz)
-    },
-    // create-quiz 이벤트 핸들러
-    handleCreateQuiz(newQuiz) {
-      this.$emit('create-quiz', newQuiz)
     },
   },
 }
@@ -145,15 +140,32 @@ export default {
   padding: 0 2rem;
 }
 
+.quiz-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
 .container h2 {
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 1.8rem;
 }
 
-.container > p {
-  color: #666;
-  margin-bottom: 2rem;
+.create-quiz-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-quiz-btn:hover {
+  background: #218838;
 }
 
 /* 퀴즈 목록 */
@@ -161,6 +173,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .quiz-item {
@@ -203,6 +216,12 @@ export default {
 @media (max-width: 768px) {
   .main-content {
     padding: 0 1rem;
+  }
+
+  .quiz-header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .quiz-header h1 {

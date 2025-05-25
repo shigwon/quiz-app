@@ -1,4 +1,3 @@
-<!-- src/views/Home.vue -->
 <template>
   <div class="home">
     <!-- 헤더 영역 -->
@@ -9,7 +8,8 @@
 
     <!-- 네비게이션 -->
     <nav class="navigation">
-      <span class="nav-item active">Home</span>
+      <span class="nav-item">Home</span>
+      <span class="nav-separator">|</span>
     </nav>
 
     <!-- 메인 콘텐츠 -->
@@ -22,38 +22,9 @@
           <p>퀴즈 목록 페이지에서 다양한 퀴즈를 확인하세요.</p>
 
           <div class="quiz-questions">
-            <div class="question-item">
-              <div class="question-number">5번 문제.</div>
-              <div class="question-text">
-                몰 애플리케이션을 개발할 때, 사용자의 브라우저에 보여지는 부분을 렌더링하는 언어는
-                무엇인가요?
-              </div>
-              <div class="answer-hint">정답 입력</div>
-              <input type="text" class="answer-input" placeholder="답을 입력하세요" />
-            </div>
-
-            <div class="question-item">
-              <div class="question-number">4번 문제.</div>
-              <div class="question-text">
-                Python의 가상 환경을 만들어 프로젝트 별로 라이브러리 의존성을 격리시키는 명령어는?
-              </div>
-              <div class="answer-hint">정답 입력</div>
-              <input type="text" class="answer-input" placeholder="답을 입력하세요" />
-            </div>
-
-            <div class="question-item">
-              <div class="question-number">3번 문제.</div>
-              <div class="question-text">
-                몰 애플리케이션에서 클라이언트의 데이터를 서버로 전송할 때 주로 사용되는 HTTP
-                메서드는?
-              </div>
-              <div class="answer-hint">정답 입력</div>
-              <input type="text" class="answer-input" placeholder="답을 입력하세요" />
-            </div>
-
-            <div class="question-item">
-              <div class="question-number">2번 문제.</div>
-              <div class="question-text">HTML에서 텍스트 입력란을 만드는 데 사용되는 요소는?</div>
+            <div class="question-item" v-for="quiz in quizzes" :key="quiz.pk">
+              <div class="question-number">{{ quiz.pk }}번 문제.</div>
+              <div class="question-text">{{ quiz.question }}</div>
               <div class="answer-hint">정답 입력</div>
               <input type="text" class="answer-input" placeholder="답을 입력하세요" />
             </div>
@@ -70,15 +41,15 @@
 
             <div class="form-group">
               <label for="question">문제</label>
-              <textarea id="question" v-model="newQuestion" placeholder="" rows="3"></textarea>
+              <textarea id="question" placeholder="" rows="3"></textarea>
             </div>
 
             <div class="form-group">
               <label for="answer">답안</label>
-              <input type="text" id="answer" v-model="newAnswer" placeholder="" />
+              <input type="text" id="answer" placeholder="" />
             </div>
 
-            <button class="create-btn" @click="createQuiz">퀴즈 생성</button>
+            <button class="create-btn">퀴즈 생성</button>
           </div>
         </section>
 
@@ -127,24 +98,7 @@
 <script>
 export default {
   name: 'HomePage',
-  data() {
-    return {
-      newQuestion: '',
-      newAnswer: '',
-    }
-  },
-  methods: {
-    createQuiz() {
-      if (this.newQuestion.trim() && this.newAnswer.trim()) {
-        alert(`퀴즈가 생성되었습니다!\n문제: ${this.newQuestion}\n답안: ${this.newAnswer}`)
-        // 실제로는 여기서 퀴즈를 저장하는 로직 추가
-        this.newQuestion = ''
-        this.newAnswer = ''
-      } else {
-        alert('문제와 답안을 모두 입력해주세요.')
-      }
-    },
-  },
+  inject: ['quizzes'],
 }
 </script>
 
@@ -157,21 +111,21 @@ export default {
 
 /* 헤더 영역 */
 .quiz-header {
-  background: linear-gradient(135deg, #ff8c42, #ff6b35);
+  background: #ff8c42;
   color: white;
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
   margin-bottom: 0;
 }
 
 .quiz-header h1 {
-  font-size: 2rem;
-  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
   font-weight: bold;
 }
 
 .quiz-header p {
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin: 0;
   opacity: 0.9;
 }
@@ -179,9 +133,9 @@ export default {
 /* 네비게이션 */
 .navigation {
   background-color: #333;
-  padding: 0.8rem 0;
+  padding: 0.5rem 0;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .nav-item {
@@ -190,181 +144,136 @@ export default {
   font-weight: bold;
 }
 
-.nav-item.active {
-  background-color: #555;
+.nav-separator {
+  color: white;
+  margin: 0 0.5rem;
 }
 
 /* 메인 콘텐츠 */
 .main-content {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
 }
 
 .container h2 {
   color: #333;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
 }
 
-.quiz-intro h3 {
+.quiz-intro h3,
+.quiz-create-section h3,
+.answer-section h3 {
   color: #333;
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
 }
 
-.quiz-intro > p {
+.quiz-intro > p,
+.quiz-create-section > p,
+.answer-section > p {
   color: #666;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 /* 퀴즈 질문들 */
 .quiz-questions {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
 }
 
 .question-item {
   background: white;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 1rem;
 }
 
 .question-number {
   font-weight: bold;
   color: #333;
   margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .question-text {
   color: #555;
-  line-height: 1.6;
-  margin-bottom: 1rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
 }
 
 .answer-hint {
   color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
 }
 
 .answer-input {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
-}
-
-.answer-input:focus {
-  outline: none;
-  border-color: #ff8c42;
-  box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
-}
-
-/* 퀴즈 생성 섹션 */
-.quiz-create-section {
-  margin-top: 3rem;
-  margin-bottom: 3rem;
-}
-
-.quiz-create-section h3 {
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-size: 1.4rem;
-}
-
-.quiz-create-section > p {
-  color: #666;
-  margin-bottom: 1.5rem;
   font-size: 0.9rem;
 }
 
+/* 퀴즈 생성 섹션 */
 .quiz-creator {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 2rem;
-  border: 1px solid #e9ecef;
+  background: white;
+  border-radius: 4px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  margin-bottom: 2rem;
 }
 
 .quiz-creator h4 {
   color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-  font-weight: normal;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .form-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
   display: block;
   color: #666;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   font-size: 0.9rem;
-  font-weight: normal;
 }
 
 .form-group textarea,
 .form-group input {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
   font-family: inherit;
-  background: white;
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 80px;
-}
-
-.form-group textarea:focus,
-.form-group input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  min-height: 60px;
 }
 
 .create-btn {
   background: #007bff;
   color: white;
   border: none;
-  padding: 0.8rem 2rem;
+  padding: 0.5rem 0;
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.3s;
   width: 100%;
 }
 
-.create-btn:hover {
-  background: #0056b3;
-}
-
 /* 정답 페이지 섹션 */
-.answer-section {
-  margin-top: 3rem;
-}
-
-.answer-section h3 {
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-size: 1.4rem;
-}
-
-.answer-section > p {
-  color: #666;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-}
-
 .answer-results {
   display: flex;
   flex-direction: column;
@@ -372,24 +281,16 @@ export default {
 }
 
 .answer-card {
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: white;
+  border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #e9ecef;
+  border: 1px solid #ddd;
 }
 
 .answer-header {
-  background: #e9ecef;
-  padding: 1rem;
+  background: #f8f9fa;
+  padding: 0.5rem;
   text-align: center;
-}
-
-.answer-card.correct .answer-header {
-  background: #e9ecef;
-}
-
-.answer-card.incorrect .answer-header {
-  background: #e9ecef;
 }
 
 .question-label {
@@ -401,20 +302,18 @@ export default {
 
 .answer-header h4 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #333;
-  font-weight: 600;
 }
 
 .answer-body {
-  padding: 1.5rem;
-  background: white;
+  padding: 1rem;
 }
 
 .result-message {
   font-weight: bold;
-  margin-bottom: 1rem;
-  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .correct-msg {
@@ -429,47 +328,16 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #555;
 }
 
 .user-answer {
-  color: #666;
-  font-weight: normal;
-}
-
-.correct-answer-text {
-  color: #333;
   font-weight: 500;
 }
 
-/* 반응형 디자인 추가 */
-@media (max-width: 768px) {
-  .quiz-creator {
-    padding: 1.5rem;
-  }
-
-  .answer-body {
-    padding: 1rem;
-  }
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 0 1rem;
-  }
-
-  .quiz-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .quiz-header p {
-    font-size: 0.9rem;
-  }
-
-  .question-item {
-    padding: 1rem;
-  }
+.correct-answer-text {
+  color: #28a745;
+  font-weight: 600;
 }
 </style>
