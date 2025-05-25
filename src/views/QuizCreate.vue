@@ -1,4 +1,3 @@
-<!-- src/views/QuizCreate.vue -->
 <template>
   <div class="quiz-create">
     <!-- 헤더 영역 -->
@@ -9,11 +8,11 @@
 
     <!-- 네비게이션 -->
     <nav class="navigation">
-      <router-link to="/" class="nav-item">Home</router-link>
+      <button class="nav-item" @click="$emit('go-back')">홈</button>
       <span class="nav-separator">|</span>
-      <router-link to="/quiz" class="nav-item">QuizView</router-link>
+      <button class="nav-item" @click="$emit('go-back')">퀴즈 목록</button>
       <span class="nav-separator">|</span>
-      <span class="nav-item active">QuizCreate</span>
+      <span class="nav-item active">퀴즈 생성</span>
     </nav>
 
     <!-- 메인 콘텐츠 -->
@@ -22,8 +21,7 @@
         <h2>새로운 퀴즈 생성</h2>
 
         <div class="quiz-form-container">
-          <!-- 퀴즈 생성 폼 -->
-          <form @submit.prevent="submitEvent" class="quiz-form">
+          <form @submit.prevent="submitQuiz" class="quiz-form">
             <div class="form-group">
               <label for="question">문제</label>
               <textarea
@@ -54,9 +52,12 @@
               >
                 퀴즈 생성
               </button>
-              <button type="button" class="cancel-btn" @click="goBack">취소</button>
+              <button type="button" class="cancel-btn" @click="$emit('go-back')">취소</button>
             </div>
           </form>
+
+          <!-- 디버깅용 버튼 -->
+          <button @click="createTestQuiz" class="test-btn">테스트 퀴즈 생성</button>
         </div>
       </div>
     </main>
@@ -73,7 +74,7 @@ export default {
     }
   },
   methods: {
-    submitEvent() {
+    submitQuiz() {
       if (!this.question.trim() || !this.answer.trim()) {
         alert('문제와 답안을 모두 입력해주세요.')
         return
@@ -84,20 +85,24 @@ export default {
         answer: this.answer.trim(),
       }
 
-      // create-quiz 이벤트 발생 (부모 컴포넌트로 새 퀴즈 전달)
+      console.log('QuizCreate - 퀴즈 생성 시도:', newQuiz)
+
+      // 부모 컴포넌트로 이벤트 발생
       this.$emit('create-quiz', newQuiz)
 
       // 폼 초기화
       this.question = ''
       this.answer = ''
-
-      alert(`퀴즈가 생성되었습니다!`)
-
-      // QuizView로 이동
-      this.$router.push('/quiz')
     },
-    goBack() {
-      this.$router.push('/quiz')
+    createTestQuiz() {
+      console.log('테스트 퀴즈 생성 버튼 클릭됨')
+      const testQuiz = {
+        question: '테스트 문제입니다',
+        answer: '테스트',
+      }
+
+      // 부모 컴포넌트로 이벤트 발생
+      this.$emit('create-quiz', testQuiz)
     },
   },
 }
@@ -144,6 +149,9 @@ export default {
   padding: 0.5rem 1rem;
   text-decoration: none;
   font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-item:hover {
@@ -178,7 +186,6 @@ export default {
   margin-bottom: 2rem;
 }
 
-/* 퀴즈 폼 스타일 */
 .quiz-form {
   background: white;
   border-radius: 8px;
@@ -266,18 +273,28 @@ export default {
   background: #545b62;
 }
 
+/* 테스트 버튼 */
+.test-btn {
+  display: block;
+  margin-top: 1rem;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.test-btn:hover {
+  background: #138496;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .main-content {
     padding: 0 1rem;
-  }
-
-  .quiz-form {
-    padding: 1.5rem;
-  }
-
-  .form-actions {
-    flex-direction: column;
   }
 }
 </style>

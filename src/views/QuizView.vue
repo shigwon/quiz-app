@@ -1,4 +1,3 @@
-<!-- src/views/QuizView.vue -->
 <template>
   <div class="quiz-view">
     <!-- 헤더 영역 -->
@@ -9,11 +8,11 @@
 
     <!-- 네비게이션 -->
     <nav class="navigation">
-      <router-link to="/" class="nav-item">Home</router-link>
+      <button class="nav-item">홈</button>
       <span class="nav-separator">|</span>
-      <span class="nav-item active">QuizView</span>
+      <span class="nav-item active">퀴즈 목록</span>
       <span class="nav-separator">|</span>
-      <router-link to="/quiz/create" class="nav-item">QuizCreate</router-link>
+      <button class="nav-item" @click="$emit('go-to-create')">퀴즈 생성</button>
     </nav>
 
     <!-- 메인 콘텐츠 -->
@@ -21,16 +20,15 @@
       <div class="container">
         <div class="quiz-header-section">
           <h2>퀴즈 목록</h2>
-          <button class="create-quiz-btn" @click="goToCreateQuiz">새 퀴즈 생성</button>
+          <button class="create-quiz-btn" @click="$emit('go-to-create')">새 퀴즈 생성</button>
         </div>
 
         <div class="quiz-list">
-          <!-- v-for를 사용하여 각 퀴즈 데이터의 정보를 렌더링 (computed로 정렬된 목록) -->
           <div
             v-for="quiz in sortedQuizzes"
             :key="quiz.pk"
             class="quiz-item"
-            @click="goToQuizDetail(quiz.pk)"
+            @click="$emit('go-to-detail', quiz.pk)"
           >
             <div class="quiz-number">{{ quiz.pk }}번 문제</div>
             <div class="quiz-question">{{ quiz.question }}</div>
@@ -48,28 +46,13 @@ export default {
   props: {
     quizzes: {
       type: Array,
-      default: () => [],
+      required: true,
     },
   },
   computed: {
     // Array.sort((a, b) => b.pk - a.pk) - 내림차순 정렬, pk값이 클수록 위에 표시
     sortedQuizzes() {
       return [...this.quizzes].sort((a, b) => b.pk - a.pk)
-    },
-  },
-  methods: {
-    goToQuizDetail(pk) {
-      // QuizDetail로 라우팅하면서 pk를 파라미터로 전달
-      this.$router.push(`/quiz/${pk}`)
-    },
-    goToCreateQuiz() {
-      // QuizCreate 페이지로 이동
-      this.$router.push('/quiz/create')
-    },
-    // updateQuiz 메서드: 새로운 퀴즈를 받아서 부모로 전달
-    updateQuiz(newQuiz) {
-      // 부모 컴포넌트로 이벤트 전달
-      this.$emit('update-quiz', newQuiz)
     },
   },
 }
@@ -116,6 +99,9 @@ export default {
   padding: 0.5rem 1rem;
   text-decoration: none;
   font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-item:hover {

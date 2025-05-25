@@ -1,11 +1,6 @@
-<!-- src/App.vue -->
 <template>
   <div id="app">
-    <router-view
-      :quizzes="quizzes"
-      @create-quiz="handleCreateQuiz"
-      @update-quiz="handleUpdateQuiz"
-    />
+    <router-view />
   </div>
 </template>
 
@@ -19,7 +14,7 @@ export default {
           pk: 1,
           question:
             'Python 가상 환경을 만들어 프로젝트 별로 라이브러리 의존성을 격리시키는 명령어는?',
-          answer: 'flask',
+          answer: 'virtualenv',
         },
         {
           pk: 2,
@@ -34,9 +29,8 @@ export default {
         },
         {
           pk: 4,
-          question:
-            'Python의 가상 환경을 만들어 프로젝트 별로 라이브러리 의존성을 격리시키는 명령어는?',
-          answer: 'virtualenv',
+          question: 'JavaScript에서 DOM 요소를 ID로 선택할 때 사용하는 메서드는?',
+          answer: 'getElementById',
         },
         {
           pk: 5,
@@ -47,14 +41,10 @@ export default {
       ],
     }
   },
-  // Home.vue에서 inject로 quizzes를 받을 수 있도록 provide 추가
-  provide() {
-    return {
-      quizzes: this.quizzes,
-    }
-  },
   methods: {
     handleCreateQuiz(newQuiz) {
+      console.log('App.vue에서 퀴즈 생성:', newQuiz)
+
       // 새 퀴즈 생성
       // 새 pk 값은 기존 가장 큰 pk 값 + 1
       const maxPk = Math.max(...this.quizzes.map((quiz) => quiz.pk), 0)
@@ -65,14 +55,28 @@ export default {
 
       // 새 퀴즈를 배열에 추가
       this.quizzes.push(quizWithPk)
+      console.log('퀴즈가 추가되었습니다:', this.quizzes)
     },
     handleUpdateQuiz(updatedQuiz) {
+      console.log('App.vue에서 퀴즈 업데이트:', updatedQuiz)
+
       // 기존 퀴즈 업데이트
       const index = this.quizzes.findIndex((quiz) => quiz.pk === updatedQuiz.pk)
       if (index !== -1) {
         this.quizzes[index] = updatedQuiz
       }
     },
+  },
+  // provide로 모든 컴포넌트에서 접근 가능하게 설정
+  provide() {
+    return {
+      quizzes: this.quizzes,
+      createQuiz: this.handleCreateQuiz, // 퀴즈 생성 메서드 제공
+      updateQuiz: this.handleUpdateQuiz, // 퀴즈 업데이트 메서드 제공
+    }
+  },
+  created() {
+    console.log('App.vue created - 초기 퀴즈 데이터:', this.quizzes)
   },
 }
 </script>
